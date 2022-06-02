@@ -1,0 +1,33 @@
+
+/*
+ * Moves the northwind.sql file into template folder for SQLite
+ */
+if
+   not
+      io.file.exists:/etc/sqlite/templates/northwind.sql
+   .lambda
+
+      // File doesn't exists, hence moving it.
+      io.file.move:/modules/sqlite-northwind/magic.startup/northwind.sql
+         .:/etc/sqlite/templates/
+      log.info:Northwind database moved into etc folder
+         filename:/etc/sqlite/templates/northwind.sql
+
+/*
+ * Creates the northwind database
+ */
+if
+   not
+      io.file.exists:/data/northwind.db
+   .lambda
+
+      // Creating a default database file to store database in.
+      io.file.save:/data/northwind.db
+         .:
+      log.info:Northwind database file created
+         filename:/data/northwind.db
+
+/*
+ * Evicting cache item related to SQLite database
+ */
+cache.set:magic.sql.databases.sqlite.generic
