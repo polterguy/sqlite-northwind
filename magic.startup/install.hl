@@ -1,6 +1,7 @@
 
 /*
- * Moves the northwind.sql file into template folder for SQLite
+ * Moves the northwind.sql file into template folder for SQLite,
+ * creates the database, and executes the SQL script.
  */
 if
    not
@@ -10,12 +11,10 @@ if
       // File doesn't exists, hence moving it.
       io.file.move:/modules/sqlite-northwind/magic.startup/northwind.sql
          .:/etc/sqlite/templates/
-      log.info:Northwind database moved into etc folder
+      log.info:Northwind database SQL script moved into etc folder
          filename:/etc/sqlite/templates/northwind.sql
 
-/*
- * Creates the northwind database
- */
+// Creates the Northwind database file.
 if
    not
       io.file.exists:/data/northwind.db
@@ -27,7 +26,12 @@ if
       log.info:Northwind database file created
          filename:/data/northwind.db
 
-/*
- * Evicting cache item related to SQLite database
- */
-cache.set:magic.sql.databases.sqlite.generic
+      // Loads and executes the northwind.sql script.
+      io.file.load:/etc/sqlite/templates/northwind.sql
+      sqlite.connect:northwind
+         sqlite.execute:x:@io.file.load
+      log.info:The northwind database was successfully created
+         filename:/etc/sqlite/templates/northwind.sql
+
+      // Evicting cache item related to SQLite.
+      cache.set:magic.sql.databases.sqlite.generic
