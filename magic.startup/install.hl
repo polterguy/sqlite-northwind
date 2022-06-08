@@ -1,18 +1,26 @@
 
-/*
- * Moves the northwind.sql file into template folder for SQLite,
- * creates the database, and executes the SQL script.
- */
-if
-   not
-      io.file.exists:/etc/sqlite/templates/northwind.sql
-   .lambda
+// Moves all SQL scripts into correct folder.
+io.file.list:/modules/sqlite-northwind/magic.startup/
+for-each:x:-/*
+   strings.split:x:@.dp/#
+      .:/
+   if
+      strings.ends-with:x:@.dp/#
+         .:.sql
+      .lambda
+         strings.concat
+            .:/etc/sqlite/templates/
+            get-value:x:@strings.split/0/-
+         if
+            not
+               io.file.exists:x:@strings.concat
+            .lambda
 
-      // File doesn't exists, hence moving it.
-      io.file.move:/modules/sqlite-northwind/magic.startup/northwind.sql
-         .:/etc/sqlite/templates/
-      log.info:Northwind database SQL script moved into etc folder
-         filename:/etc/sqlite/templates/northwind.sql
+               // File doesn't exists, hence moving it.
+               io.file.move:x:@.dp/#
+                  .:/etc/sqlite/templates/
+               log.info:SQL script moved into etc folder
+                  filename:x:@.dp/#
 
 // Creates the Northwind database file.
 if
