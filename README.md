@@ -1,4 +1,4 @@
-# SQLite northwind database
+# SQLite Northwind database
 
 Northwind SQLite database script plugin for Magic that installs the Northwind database into
 your _"/etc/sqlite/templates/"_ folder for you, for then to execute the SQL script, creating
